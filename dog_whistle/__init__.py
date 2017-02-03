@@ -93,7 +93,7 @@ def dw_analyze(path):
             print "Invalid Lines"
             print "-------------"
             print ""
-            print "<<<<<<<<<< YOU MUST FIX THESE BEFORE USING THE DOGWATCHER LIBRARY >>>>>>>>>>>"
+            print "<<<<<<<<<< YOU MUST FIX THESE BEFORE USING THE DOGWHISTLE LIBRARY >>>>>>>>>>>"
             print ""
             curr_file = None
             for item in unknown_cache:
@@ -105,6 +105,7 @@ def dw_analyze(path):
         # messy but it makes a really nice string in the end
         recommended_str = '''
 dw_dict = {
+    'name': '<my_project>',
     'tags': [
         # high level tags that everything in your app will have
         'item:descriptor'
@@ -177,10 +178,10 @@ def dw_config(settings):
         # check configuration validity
         if 'name' not in _dw_configuration:
             log.error("Unknown application name")
-            raise Exception("'name' key required in dog_watcher config")
+            raise Exception("'name' key required in dog_whistle config")
         if 'options' not in _dw_configuration:
             log.error("Unknown options configuration")
-            raise Exception("'options' key required in dog_watcher config")
+            raise Exception("'options' key required in dog_whistle config")
 
         if 'metrics' not in _dw_configuration:
             log.debug("no metrics provided")
@@ -231,7 +232,7 @@ def dw_config(settings):
 
         _dw_init = True
     else:
-        log.warning("tried to configure DogWatcher more than once within app")
+        log.warning("tried to configure DogWhistle more than once within app")
 
 
 def dw_callback(message, extras):

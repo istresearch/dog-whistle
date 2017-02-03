@@ -48,7 +48,7 @@ settings = {
 
 dw_config(settings)
 
-logger = LogFactory.get_instance()
+logger = LogFactory.get_instance(level='WARN')
 logger.register_callback('*', dw_callback)
 
 for i in xrange(0, 100):

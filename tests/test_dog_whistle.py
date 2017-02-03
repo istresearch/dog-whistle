@@ -18,7 +18,7 @@ def captured_output():
         sys.stdout, sys.stderr = old_out, old_err
 
 
-class DogWatcherTest(TestCase):
+class DogWhistleTest(TestCase):
 
     def test_01_analyze_blank(self):
         expected = 'It does not appear like the LogFactory is used in this project'
@@ -30,7 +30,7 @@ class DogWatcherTest(TestCase):
         self.assertEqual(output, expected)
 
     def test_02_analyze_found_lf(self):
-        expected = "You don't appear to have any logger statements.\n\nAuto-Generated Template Settings\n--------------------------------\n\ndw_dict = {\n    'tags': [\n        # high level tags that everything in your app will have\n        'item:descriptor'\n    ],\n    'metrics': {\n        # By default, everything is a counter using the concatentated log string\n        # the 'counters' key is NOT required, it is shown here for illustration\n        'counters': [\n            # datadog metrics that will use ++\n        ],\n        # datadog metrics that have a predefined value like `51`\n        # These metrics override any 'counter' with the same key,\n        # and are shown here for illustration purposes only\n        'gauges': [\n            \n        ]\n    },\n    'options': {\n        # use statsd for local testing, see docs\n        'statsd_host': 'localhost',\n        'statsd_port': 8125,\n        'local': True,\n        # OR use datadog for DD integration\n        'api_key': 'abc123',\n        'app_key': 'key',\n        'api_host': 'ddhost',\n    },\n\n}\n\nEnsure the above dictionary is passed into `dw_config()`"
+        expected = "You don't appear to have any logger statements.\n\nAuto-Generated Template Settings\n--------------------------------\n\ndw_dict = {\n    'name': '<my_project>',\n    'tags': [\n        # high level tags that everything in your app will have\n        'item:descriptor'\n    ],\n    'metrics': {\n        # By default, everything is a counter using the concatentated log string\n        # the 'counters' key is NOT required, it is shown here for illustration\n        'counters': [\n            # datadog metrics that will use ++\n        ],\n        # datadog metrics that have a predefined value like `51`\n        # These metrics override any 'counter' with the same key,\n        # and are shown here for illustration purposes only\n        'gauges': [\n            \n        ]\n    },\n    'options': {\n        # use statsd for local testing, see docs\n        'statsd_host': 'localhost',\n        'statsd_port': 8125,\n        'local': True,\n        # OR use datadog for DD integration\n        'api_key': 'abc123',\n        'app_key': 'key',\n        'api_host': 'ddhost',\n    },\n\n}\n\nEnsure the above dictionary is passed into `dw_config()`"
 
         with captured_output() as (out, err):
             dw_analyze('./tests/example2')
@@ -39,7 +39,7 @@ class DogWatcherTest(TestCase):
         self.assertEqual(output, expected)
 
     def test_03_analyze_found_logs(self):
-        expected = 'Valid Lines\n-----------\n./tests/example3/example.py\n   3 : logger.info("hey this is a message")\n   5 : logger.warn("stuff", extras)\n\nInvalid Lines\n-------------\n\n<<<<<<<<<< YOU MUST FIX THESE BEFORE USING THE DOGWATCHER LIBRARY >>>>>>>>>>>\n\n./tests/example3/example.py\n   7 : logger.info("bad" + str(val), extras)\n\nAuto-Generated Template Settings\n--------------------------------\n\ndw_dict = {\n    \'tags\': [\n        # high level tags that everything in your app will have\n        \'item:descriptor\'\n    ],\n    \'metrics\': {\n        # By default, everything is a counter using the concatentated log string\n        # the \'counters\' key is NOT required, it is shown here for illustration\n        \'counters\': [\n            # datadog metrics that will use ++\n            ("hey this is a message", "hey_this_is_a_message"),\n            ("stuff", "stuff"),\n        ],\n        # datadog metrics that have a predefined value like `51`\n        # These metrics override any \'counter\' with the same key,\n        # and are shown here for illustration purposes only\n        \'gauges\': [\n            \n            ("stuff", "stuff", "<extras.key.path>"),\n        ]\n    },\n    \'options\': {\n        # use statsd for local testing, see docs\n        \'statsd_host\': \'localhost\',\n        \'statsd_port\': 8125,\n        \'local\': True,\n        # OR use datadog for DD integration\n        \'api_key\': \'abc123\',\n        \'app_key\': \'key\',\n        \'api_host\': \'ddhost\',\n    },\n\n}\n\nEnsure the above dictionary is passed into `dw_config()`'
+        expected = 'Valid Lines\n-----------\n./tests/example3/example.py\n   3 : logger.info("hey this is a message")\n   5 : logger.warn("stuff", extras)\n\nInvalid Lines\n-------------\n\n<<<<<<<<<< YOU MUST FIX THESE BEFORE USING THE DOGWHISTLE LIBRARY >>>>>>>>>>>\n\n./tests/example3/example.py\n   7 : logger.info("bad" + str(val), extras)\n\nAuto-Generated Template Settings\n--------------------------------\n\ndw_dict = {\n    \'name\': \'<my_project>\',\n    \'tags\': [\n        # high level tags that everything in your app will have\n        \'item:descriptor\'\n    ],\n    \'metrics\': {\n        # By default, everything is a counter using the concatentated log string\n        # the \'counters\' key is NOT required, it is shown here for illustration\n        \'counters\': [\n            # datadog metrics that will use ++\n            ("hey this is a message", "hey_this_is_a_message"),\n            ("stuff", "stuff"),\n        ],\n        # datadog metrics that have a predefined value like `51`\n        # These metrics override any \'counter\' with the same key,\n        # and are shown here for illustration purposes only\n        \'gauges\': [\n            \n            ("stuff", "stuff", "<extras.key.path>"),\n        ]\n    },\n    \'options\': {\n        # use statsd for local testing, see docs\n        \'statsd_host\': \'localhost\',\n        \'statsd_port\': 8125,\n        \'local\': True,\n        # OR use datadog for DD integration\n        \'api_key\': \'abc123\',\n        \'app_key\': \'key\',\n        \'api_host\': \'ddhost\',\n    },\n\n}\n\nEnsure the above dictionary is passed into `dw_config()`'
 
         with captured_output() as (out, err):
             dw_analyze('./tests/example3')
@@ -52,14 +52,14 @@ class DogWatcherTest(TestCase):
 
         with self.assertRaises(Exception) as e:
             dw_config(bad)
-        self.assertEquals(e.exception.message, "'name' key required in dog_watcher config")
+        self.assertEquals(e.exception.message, "'name' key required in dog_whistle config")
 
     def test_05_config_no_options(self):
         bad = {'name': 'tom'}
 
         with self.assertRaises(Exception) as e:
             dw_config(bad)
-        self.assertEquals(e.exception.message, "'options' key required in dog_watcher config")
+        self.assertEquals(e.exception.message, "'options' key required in dog_whistle config")
 
     def test_06_config_bad_statsd(self):
         configs = {
