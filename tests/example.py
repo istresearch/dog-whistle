@@ -25,20 +25,13 @@ from dog_whistle import dw_config, dw_callback
 
 
 settings = {
+    'name': 'Scrapy Cluster',
     'tags': [
         # high level tags that everything in your app will have
         'list:strings'
     ],
     'metrics': {
-        'counters': [
-            # datadog metrics that will use ++
-            ("this is a test", "test.counter"),
-        ],
-        'guages': [
-            # datadog metrics that have a predefined value like `51`
-            ("I have a guage", "test.guage1", "value"),
-            ("Too high!", "test.guage2", "wrapper.value"),
-        ]
+
     },
     'options': {
         # use statsd for local testing, see docs
@@ -64,8 +57,8 @@ for i in xrange(0, 100):
 val = 50
 for i in xrange(0, 100):
     val += randrange(-1, 2, 1)
-    logger.info("I have a guage", {'value': i})
-    logger.warn("bad line " + str(val))
+    logger.info("I have a guage and this message is really long and stuff", {'value': i})
+    #logger.warn("bad line " + str(val))
 
     if val > 50:
         logger.error("Too high!", {'wrapper': {'value': val}})
