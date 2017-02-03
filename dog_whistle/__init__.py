@@ -14,11 +14,6 @@ import copy
 logging.getLogger(__name__).addHandler(NullHandler())
 log = logging.getLogger(__name__)
 
-_dw_configuration = None
-_dw_init = False
-_dw_stats = None
-_dw_local = False
-
 # the max length of a message
 MAX_LENGTH = 50
 
@@ -72,9 +67,8 @@ def dw_analyze(path):
                                            matches[0]))
                     else:
                         log.debug("found unknown line")
-                        if '#' not in line:
-                            unknown_cache.append((file, line_number,
-                                                  line.strip(), matches[0]))
+                        unknown_cache.append((file, line_number,
+                                              line.strip(), matches[0]))
 
                 line_number += 1
 
@@ -343,3 +337,23 @@ def _gauge(name, value, tags):
         _dw_stats.gauge(name, value)
     else:
         _dw_stats.gauge(name, value, tags)
+
+def _get_config():
+    """Returns the current configuration of the module"""
+    global _dw_configuration
+    return _dw_configuration
+
+def _reset():
+    """Resets the module configuration to the defaults"""
+    global _dw_stats
+    global _dw_local
+    global _dw_configuration
+    global _dw_init
+
+    _dw_configuration = None
+    _dw_init = False
+    _dw_stats = None
+    _dw_local = False
+
+# set the initial global configs
+_reset()
