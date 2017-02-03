@@ -19,12 +19,9 @@ MAX_LENGTH = 50
 
 
 def dw_analyze(path):
-    """Used to analyze a project structure and output the recommended
-    settings dictionary to be used when used in practice. Run this method, then
-    add the resulting output to your project
+    """Used to analyze a project structure and output the recommended settings dictionary to be used when used in practice. Run this method, then add the resulting output to your project
 
-    :param str path: The folder path to analyze
-    """
+    :param str path: The folder path to analyze"""
     global MAX_LENGTH
     log.debug("dw_analyze")
 
@@ -163,9 +160,8 @@ Ensure the above dictionary is passed into `dw_config()`
 def dw_config(settings):
     """Set up the datadog callback integration
 
-    :param dict settings: The settings dict containing the `analyze()`
-    configuration
-    """
+    :param dict settings: The settings dict containing the `dw_analyze()` configuration
+    :raises: :class:`Exception` if configuration is missing"""
     # import globals
     global _dw_configuration
     global _dw_init
@@ -242,8 +238,7 @@ def dw_callback(message, extras):
     """The actual callback method passed to the logger
 
     :param str message: The log message
-    :param dict extras: The extras dictionary from the logger
-    """
+    :param dict extras: The extras dictionary from the logger"""
     # import globals
     global _dw_configuration
     global _dw_init

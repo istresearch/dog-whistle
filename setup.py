@@ -10,10 +10,10 @@ def get_version():
 
 install_requires = [
     'mock>=1.3.0',
-    'testfixtures>=4.3.3',
     'coverage==4.0.3',
     'nose>=1.3.7',
     'statsd==3.2.1',
+    'datadog==0.15.0',
 ]
 
 lint_requires = [
@@ -23,7 +23,6 @@ lint_requires = [
 
 tests_require = [
     'mock==1.3.0',
-    'testfixtures==4.3.3'
 ]
 
 dependency_links = []
