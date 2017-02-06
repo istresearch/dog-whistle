@@ -208,10 +208,9 @@ def dw_config(settings):
             _dw_stats.increment = statsd.incr
             _dw_local = True
         else:
-            from datadog import initialize, ThreadStats
+            from datadog import initialize, statsd
             initialize(**_dw_configuration['options'])
-            _dw_stats = ThreadStats()
-            _dw_stats.start()
+            _dw_stats = statsd
 
         # generate override mappings
         _dw_configuration['metrics']['c_mapper'] = {}
@@ -256,7 +255,6 @@ def dw_callback(message, extras):
                 log.warning("Could not find key inside extras")
             else:
                 the_msg = _ddify(_dw_configuration['metrics']['g_mapper'][message]['name'])
-                log.info("metric guage " + the_msg)
                 _gauge(the_msg, value, tags=_dw_configuration['tags'])
         # increment counter metric
         else:
@@ -266,7 +264,6 @@ def dw_callback(message, extras):
             else:
                 the_msg = _ddify(message)
 
-            log.info("incremented counter " + the_msg)
             _increment(the_msg, tags=_dw_configuration['tags'])
     else:
         log.warning("Tried to increment attribute before configuration")
@@ -315,9 +312,11 @@ def _increment(name, tags):
     global _dw_local
 
     if _dw_local:
-        _dw_stats.increment(name)
+        _dw_stats.increment(metric=name)
     else:
-        _dw_stats.increment(name, tag)
+        _dw_stats.increment(metric=name, tags=tags)
+
+    log.info("incremented counter " + name)
 
 
 def _gauge(name, value, tags):
@@ -330,9 +329,11 @@ def _gauge(name, value, tags):
     global _dw_local
 
     if _dw_local:
-        _dw_stats.gauge(name, value)
+        _dw_stats.gauge(metric=name, value=value)
     else:
-        _dw_stats.gauge(name, value, tags)
+        _dw_stats.gauge(metric=name, value=value, tags=tags)
+
+    log.info("metric guage " + name)
 
 def _get_config():
     """Returns the current configuration of the module"""

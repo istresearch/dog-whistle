@@ -150,7 +150,7 @@ The same can be said for gauges:
 
 The dog whistle library automatically detects ``extras`` being passed into the log method, and adds lines here to recommend you use a gauge incase you are tracking a particular value in question via your ``extras`` dictionary.
 
-.. note:: At time of writing, dog whistle does not support multiple guages for a single log statement
+.. note:: At time of writing, dog whistle does not support multiple gauges for a single log statement
 
 Here, we dig into the extras dictionary using dot notation to try to find the value we are looking for. If no value is found, it is not sent.
 
@@ -162,7 +162,7 @@ Local Configuration
 Setup
 ^^^^^
 
-Now that you have an idea about your configuration, you need to integrate dog whistle into every python process or application you run. You will need to get the settings dictionary with your proper configuration into your application somehow. This guide does not cover the various ways of included the dictionary, however it is advised that you use either a settings file, environment variables, or some other way to avoid hard coding critical settings into your source code.
+Now that you have an idea about your configuration, you need to integrate dog whistle into every python process or application you run. You will need to get the settings dictionary with your proper configuration into your application somehow. This guide does not cover the various ways of including the dictionary, however it is advised that you use either a settings file, environment variables, or some other way to avoid hard coding critical settings into your source code.
 
 Once you have figured that out, at a **single** point within your application, add the following lines of code:
 
