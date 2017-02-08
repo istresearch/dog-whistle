@@ -139,10 +139,6 @@ dw_dict = {
         'statsd_host': 'localhost',
         'statsd_port': 8125,
         'local': True,
-        # OR use datadog for DD integration
-        'api_key': 'abc123',
-        'app_key': 'key',
-        'api_host': 'ddhost',
     },
 
 }
@@ -179,9 +175,10 @@ def dw_config(settings):
         if 'name' not in _dw_configuration:
             log.error("Unknown application name")
             raise Exception("'name' key required in dog_whistle config")
+
         if 'options' not in _dw_configuration:
-            log.error("Unknown options configuration")
-            raise Exception("'options' key required in dog_whistle config")
+            log.debug("no options provided")
+            _dw_configuration['options'] = {}
 
         if 'metrics' not in _dw_configuration:
             log.debug("no metrics provided")
@@ -209,6 +206,16 @@ def dw_config(settings):
             _dw_local = True
         else:
             from datadog import initialize, statsd
+
+            # ensure vars are set
+            if 'api_key' not in _dw_configuration['options'] and \
+                    os.getenv('DATADOG_API_KEY', None) is None:
+                raise Exception("Please provide DataDog API Key")
+
+            if 'app_key' not in _dw_configuration['options'] and \
+                    os.getenv('DATADOG_APP_KEY', None) is None:
+                raise Exception("Please provide DataDog APP Key")
+
             initialize(**_dw_configuration['options'])
             _dw_stats = statsd
 

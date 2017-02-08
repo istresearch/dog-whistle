@@ -12,5 +12,6 @@ Welcome to DogWhistle's documentation!
 
    usage
    api
+   license
 
 Welcome to DogWhistle's documentation! This project is designed to make `Datadog <https://www.datadoghq.com/>`_ and `Logfactory <http://scrapy-cluster.readthedocs.io/en/latest/topics/utils/logfactory.html>`_ integration go as smooth as possible, with minimal code overhead.
