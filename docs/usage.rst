@@ -76,10 +76,6 @@ Navigate to the root directory of your project or code base, and run the followi
             'statsd_host': 'localhost',
             'statsd_port': 8125,
             'local': True,
-            # OR use datadog for DD integration
-            'api_key': 'abc123',
-            'app_key': 'key',
-            'api_host': 'ddhost',
         },
 
     }
@@ -103,9 +99,12 @@ These lines were noted to have some kind of variable substitution inside them, a
 
 **Auto-Generated Template Settings**
 
-By analyzing only your valid lines, the dog whistle library dumps out a dictionary object that you will need to tweak and use later. At a bare minimum, it requires the following keys:
+By analyzing only your valid lines, the dog whistle library dumps out a dictionary object that you will need to tweak and use later. At a bare minimum, it requires the following key:
 
 * **name** - the name of your overall project
+
+If you do not provide an ``options`` key, it is assumed you will be passing your ``DATADOG_API_KEY`` and ``DATADOG_APP_KEY`` via environment variables.
+
 
 * **options** - the options to be passed to configure the statsd or datadog setup
 
@@ -212,4 +211,13 @@ TODO
 Wrapping Up
 -----------
 
-Be sure to add ``dog-whistle==X.X`` to your projects requirements.txt!
+Be sure to add the following to your projects requirements.txt!
+
+::
+
+    dog-whistle==X.X
+    scutils==1.2.0dev7
+
+Where ``X.X`` is the current version of ``dog-whistle`` on pypi
+
+.. note:: Version numbers are subject to change!
