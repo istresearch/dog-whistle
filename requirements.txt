@@ -1,1 +1,2 @@
-dog-whistle
+# this file is used to auto-generate rtd documentation
+dog-whistle==0.1.0
