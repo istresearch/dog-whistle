@@ -319,7 +319,7 @@ def _increment(name, tags):
     global _dw_local
 
     if _dw_local:
-        _dw_stats.increment(metric=name)
+        _dw_stats.increment(stat=name)
     else:
         _dw_stats.increment(metric=name, tags=tags)
 
@@ -336,7 +336,7 @@ def _gauge(name, value, tags):
     global _dw_local
 
     if _dw_local:
-        _dw_stats.gauge(metric=name, value=value)
+        _dw_stats.gauge(stat=name, value=value)
     else:
         _dw_stats.gauge(metric=name, value=value, tags=tags)
 
