@@ -96,6 +96,8 @@ These lines were noted to have some kind of variable substitution inside them, a
 
 .. warning:: You **must** correct these lines before using the dog whistle in production, otherwise our datadog metrics will not be consistent
 
+Please note that the ``dw_analyze()`` method may not pick everything up, and it is important to test and look through your code to find any problematic lines. Multiline log states, or more complex logging may not be picked up.
+
 
 **Auto-Generated Template Settings**
 
@@ -122,6 +124,8 @@ For example:
     }
 
 This configures all log messages to be counters, tied to the ``cool project`` namespace, and configured to use a local statsd host.
+
+.. note:: If you have multiple modules or components to your project, you can use dot notation to namespace them like ``my_project.component1``
 
 Further configuration can be refined via the ``metrics`` key, allow you to specify custom mappings of *log messages* to *keys*.
 
@@ -176,7 +180,7 @@ This will configue your dog whistle library to be ready to send metrics, the nex
 ::
 
     logger = LogFactory.get_instance() # your normal LogFactory setup can go here
-    logger.register_callback('*', dw_callback)
+    logger.register_callback('>=INFO', dw_callback)
 
 .. note:: You will need ``scutils==1.2.0dev7`` or above in order to use the callback feature in your project. Please update your requirements appropriately!
 
@@ -187,11 +191,58 @@ Testing
 
 Let's test our configuration using a simple `statsd <https://github.com/etsy/statsd>`_ + `graphite <http://graphite.readthedocs.io/>`_ host. Here, we are going to use Docker to pull a container that allows us to view our new metrics to check naming conventions, typos, and other things.
 
+If you are running your script locally, use the following:
+
 ::
 
-    $ docker run --restart=always -p 80:80 -p 2003-2004:2003-2004 -p 2023-2024:2023-2024 -p 8125:8125/udp -p 8126:8126 hopsoft/graphite-statsd
+    $ docker run -p 80:80 -p 2003-2004:2003-2004 -p 2023-2024:2023-2024 -p 8125:8125/udp -p 8126:8126 hopsoft/graphite-statsd
 
-That's it! Run your application with a local setup, specifying the host as ``localhost`` and the port as ``8125``, and your metrics will pump into the container running.
+::
+
+    'options': {
+        # use statsd for local testing, see docs
+        'statsd_host': 'localhost',
+        'statsd_port': 8125,
+        'local': True,
+    }
+
+If you are using Docker Compose, we recommend instead using the following settings:
+
+::
+
+  statsd:
+    image: hopsoft/graphite-statsd
+    ports:
+      - "80:80"
+      - "2003-2004:2003-2004"
+      - "2023-2024:2023-2024"
+      - "8125:8125/udp"
+      - "8126:8126"
+
+Then set the following in your ``options`` for your script:
+
+::
+
+    'options': {
+        # use statsd for local testing, see docs
+        'statsd_host': os.getenv('DATADOG_STATSD_HOST', 'statsd'),
+        'statsd_port': int(os.getenv('DATADOG_STATSD_PORT', 8125)),
+        'local': os.getenv('DATADOG_LOCAL', 'False') == 'True',
+    },
+
+and use an environment variable in your application:
+
+::
+
+    app1:
+        image: example/cool-app:prod
+        environment:
+          - DATADOG_LOCAL=True
+
+This will allow you to toggle your Datadog configuration on in local testing, but leaving it off will use production settings.
+
+
+That's it! Run your application with a local setup, and your metrics will pump into the container running.
 
 You can visit ``localhost:80`` to view your Graphite dashboard. On the ``Tree`` on the left hand side, navigate to ``Metrics/stats``. You should see your project name as a folder, and you can click on the individual metric to get it to show up in the graph.
 
@@ -199,14 +250,118 @@ You can visit ``localhost:80`` to view your Graphite dashboard. On the ``Tree`` 
 
 The same thing can be done under the ``Metrics/stats/gauges`` folder, you should see your project name and be able to click on any gauge metrics you would like.
 
-< INSERT PICTURE HERE >
+.. figure:: images/statsd.png
+   :alt: Statsd
+   :align:   center
 
 If you are happy with your setup, this completes the local testing of the dog whistle integration into your project.
 
 Datadog Configuration
 ---------------------
 
-TODO
+This section outlines how to test and connect DogWhistle to Datadog.
+
+Local Datadog Agent
+^^^^^^^^^^^^^^^^^^^
+
+Here, we assume you have a local `Datadog Agent <http://docs.datadoghq.com/guides/basic_agent_usage/>`_ running on your local machine. Please refer to the official documentation for troubleshooting connecting your machine to Datadog.
+
+.. note:: The majority of this guide should work on all platforms, however final Datadog + Docker integration may need to be conducted on a linux box only.
+
+At this point you should have a Datadog Agent installed and running successfully on your machine. Refer to your datadog configuration file to get the location of the ``statsd`` host that Datadog is running. For example, on unix based systems the log location is:
+
+::
+
+    dogstatsd_log_file: /var/log/datadog/dogstatsd.log
+
+This log is important to help debug any errors that may occur. One of the first problems you may encounter is that the agent may be shut down due to the following error.
+
+::
+
+    Traceback (most recent call last):
+      File "/opt/datadog-agent/agent/dogstatsd.py", line 396, in run
+        self.server.start()
+      File "/opt/datadog-agent/agent/dogstatsd.py", line 327, in start
+        self.socket.bind(self.address)
+      File "/opt/datadog-agent/embedded/lib/python2.7/socket.py", line 228, in meth
+        return getattr(self._sock,name)(*args)
+    error: [Errno 48] Address already in use
+
+This is caused by running both our Docker based Statsd container, and the Datadog Agent. Shut down the docker container and then restart the agent for it to boot up successfully.
+
+If you are using Docker, the following extra configuration is required in your Datadog Agent conf file.
+
+::
+
+    # Required for Docker
+    non_local_traffic: yes
+
+The following python snippet allows us to test if DogWhistle and your Datadog Agent are working correctly
+
+::
+
+    # imports
+    import logging
+    from dog_whistle import dw_config, dw_callback
+    from scutils.log_factory import LogFactory
+
+    # show all application logs
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
+    # our settings
+    DW_SETTINGS = {
+        'name': 'dog_whistle_test',
+        'options': {
+            'statsd_host': "localhost",
+            'statsd_port': 8125,
+            'local': True,
+        },
+
+    }
+
+    # configure dog whistle and log factory
+    dw_config(DW_SETTINGS)
+    logger = LogFactory.get_instance()
+    logger.register_callback('>=INFO', dw_callback)
+
+    logger.info("test log")
+
+While running this you should see a number of successful ``DEBUG`` or ``INFO`` level messages come through your console. Within a few minutes, visit the Datadog `Metrics Summary <https://app.datadoghq.com/metric/summary>`_ page, and you should see your new metric appear like so.
+
+.. figure:: images/summary.png
+   :alt: Statsd
+   :align:   center
+
+If your log messages begin to show up, you are now ready to enable DogWhistle locally to fully test your integration! For a more thorough test of DogWhistle, you can use the ``example.py`` script located within the base of this repo.
+
+You will want to make sure your final application can hit the local Datadog Agent, if running as a normal process use
+
+::
+
+    'statsd_host': "localhost",
+
+within your ``options``. If using Docker, set your configuration to
+
+::
+
+    environment:
+      - DATADOG_LOCAL=True
+      - DATADOG_STATSD_HOST=172.17.0.1 # linux only
+
+to ensure your container can hit the local Datadog Agent.
+
+.. warning:: At time of writing, Docker for Mac does not provide the ability for a container to reach the docker host. You should test your setup on a machine that has the ability to access the host so it can talk to the Datadog Agent running locally.
+
+Once your application is configured, you can see the metrics in your `Metrics Summary <https://app.datadoghq.com/metric/summary>`_ like below, and begin building custom dashboards, graphs, and alerts based on your logging.
+
+.. figure:: images/summary_final.png
+   :alt: Statsd
+   :align:   center
+
+Direct API Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Direct Datadog API Configuration is planned for a future release.
 
 Wrapping Up
 -----------
@@ -216,7 +371,7 @@ Be sure to add the following to your projects requirements.txt!
 ::
 
     dog-whistle==X.X
-    scutils==1.2.0dev7
+    scutils==1.2.0
 
 Where ``X.X`` is the current version of ``dog-whistle`` on pypi
 
