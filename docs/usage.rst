@@ -10,9 +10,7 @@ The first step you need to do is to download the ``dog_whistle`` library from pi
 
 ::
 
-    pip install dog-whistle
-
-.. note:: You must be connected to the IST Research Pip repo in order to install dog-whistle, as it is currently not open source
+    pip install dog-whistle -U
 
 Navigate to the root directory of your project or code base, and run the following commands in the python shell:
 
