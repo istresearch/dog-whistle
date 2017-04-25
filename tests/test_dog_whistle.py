@@ -6,7 +6,7 @@ from mock import patch, MagicMock
 
 # from http://stackoverflow.com/questions/4219717/how-to-assert-output-with-nosetest-unittest-in-python
 from contextlib import contextmanager
-from StringIO import StringIO
+from io import StringIO
 @contextmanager
 def captured_output():
     new_out, new_err = StringIO(), StringIO()
@@ -52,7 +52,7 @@ class DogWhistleTest(TestCase):
 
         with self.assertRaises(Exception) as e:
             dw_config(bad)
-        self.assertEquals(e.exception.message, "'name' key required in dog_whistle config")
+        self.assertEquals(e.exception.args[0], "'name' key required in dog_whistle config")
 
     def test_05_config_bad_statsd(self):
         configs = {
@@ -72,7 +72,7 @@ class DogWhistleTest(TestCase):
 
         with self.assertRaises(Exception) as e:
             dw_config(configs)
-        self.assertEquals(e.exception.message, "Unknown statsd config for local setup")
+        self.assertEquals(e.exception.args[0], "Unknown statsd config for local setup")
 
     def test_06_config_statsd(self):
         configs = {
@@ -120,7 +120,7 @@ class DogWhistleTest(TestCase):
         }
         with self.assertRaises(Exception) as e:
             dw_config(configs)
-        self.assertEquals(e.exception.message, "Please provide DataDog API Key")
+        self.assertEquals(e.exception.args[0], "Please provide DataDog API Key")
 
         # assert no app key
         configs = {
@@ -131,7 +131,7 @@ class DogWhistleTest(TestCase):
         }
         with self.assertRaises(Exception) as e:
             dw_config(configs)
-        self.assertEquals(e.exception.message, "Please provide DataDog APP Key")
+        self.assertEquals(e.exception.args[0], "Please provide DataDog APP Key")
 
     def test_08_config_dd(self):
         _reset()

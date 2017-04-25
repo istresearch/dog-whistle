@@ -1,3 +1,9 @@
+# python 2 and 3 support
+from __future__ import print_function
+from __future__ import unicode_literals
+from builtins import str
+from six import u
+
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
 try:  # Python 2.7+
@@ -30,9 +36,10 @@ def dw_analyze(path):
         for dirName, subdirList, fileList in os.walk(path):
             log.debug('Found directory: %s' % dirName)
             for fname in fileList:
-                log.debug('File: \t%s' % fname)
-                val = os.path.join(dirName, fname)
-                yield val
+                if not fname.startswith('.'):
+                    log.debug('File: \t%s' % fname)
+                    val = os.path.join(dirName, fname)
+                    yield val
 
     # compile regexes
     regex_lf = re.compile('(LogFactory.get_instance)')
@@ -60,11 +67,11 @@ def dw_analyze(path):
                 if len(matches) > 0:
                     if len(regex_inc.findall(line)) == 0:
                         log.debug("found valid line")
-                        line_cache.append((file, line_number, line.strip(),
+                        line_cache.append((file, str(line_number), line.strip(),
                                            matches[0]))
                     else:
                         log.debug("found unknown line")
-                        unknown_cache.append((file, line_number,
+                        unknown_cache.append((file, str(line_number),
                                               line.strip(), matches[0]))
 
                 line_number += 1
@@ -75,32 +82,32 @@ def dw_analyze(path):
 
         # print valid lines
         if len(line_cache) > 0:
-            print ""
-            print "Valid Lines"
-            print "-----------"
+            print("")
+            print("Valid Lines")
+            print("-----------")
             curr_file = None
             for item in line_cache:
                 if curr_file != item[0]:
                     curr_file = item[0]
-                    print item[0]
-                print '  ', item[1], ':', item[2]
+                    print(u(item[0]))
+                print('  ', item[1], ':', u(item[2]))
         else:
-            print "You don't appear to have any logger statements."
+            print("You don't appear to have any logger statements.")
 
         # print lines that need to be fixed
         if len(unknown_cache) > 0:
-            print ""
-            print "Invalid Lines"
-            print "-------------"
-            print ""
-            print "<<<<<<<<<< YOU MUST FIX THESE BEFORE USING THE DOGWHISTLE LIBRARY >>>>>>>>>>>"
-            print ""
+            print("")
+            print("Invalid Lines")
+            print("-------------")
+            print("")
+            print("<<<<<<<<<< YOU MUST FIX THESE BEFORE USING THE DOGWHISTLE LIBRARY >>>>>>>>>>>")
+            print("")
             curr_file = None
             for item in unknown_cache:
                 if curr_file != item[0]:
                     curr_file = item[0]
-                    print item[0]
-                print '  ', item[1], ':', item[2]
+                    print(u(item[0]))
+                print('  ', item[1], ':', u(item[2]))
 
         # messy but it makes a really nice string in the end
         recommended_str = '''
@@ -146,12 +153,12 @@ dw_dict = {
 Ensure the above dictionary is passed into `dw_config()`
 '''
 
-        print ""
-        print "Auto-Generated Template Settings"
-        print "--------------------------------"
-        print recommended_str
+        print("")
+        print("Auto-Generated Template Settings")
+        print("--------------------------------")
+        print(recommended_str)
     else:
-        print "It does not appear like the LogFactory is used in this project"
+        print("It does not appear like the LogFactory is used in this project")
 
 
 def dw_config(settings):

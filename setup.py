@@ -14,6 +14,8 @@ install_requires = [
     'nose>=1.3.7',
     'statsd==3.2.1',
     'datadog==0.15.0',
+    'future==0.16.0',
+    'six==1.10.0',
 ]
 
 lint_requires = [

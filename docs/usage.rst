@@ -180,7 +180,7 @@ This will configue your dog whistle library to be ready to send metrics, the nex
     logger = LogFactory.get_instance() # your normal LogFactory setup can go here
     logger.register_callback('>=INFO', dw_callback)
 
-.. note:: You will need ``scutils==1.2.0dev7`` or above in order to use the callback feature in your project. Please update your requirements appropriately!
+.. note:: You will need ``scutils==1.2.0`` or above in order to use the callback feature in your project. Please update your requirements appropriately!
 
 This will allow the dog whistle library to integrate and monitor every call the LogFactory logger creates. The callback system is much more advanced than what is decribed here, but this gives us the ability to monitor all log messages actually written by logger, anything ignored by the logger will also be ignored by this callback.
 
