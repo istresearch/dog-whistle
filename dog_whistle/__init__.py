@@ -44,7 +44,7 @@ def dw_analyze(path):
     # compile regexes
     regex_lf = re.compile('(LogFactory.get_instance)')
     regex_log = re.compile('\.(?:info|warn|warning|error|critical)\((\".*\").*\)')
-    regex_inc = re.compile('\.(?:info|warn|warning|error|critical)\((.*(?:\+|format).*).*\)')
+    regex_inc = re.compile('\.(?:info|warn|warning|error|critical)\((.*(?:\+|\.format\().*).*\)')
     regex_com = re.compile('\".*\"\,')
     found_lf = False
     line_cache = []
