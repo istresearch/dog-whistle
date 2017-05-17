@@ -2,7 +2,7 @@ from unittest import TestCase
 from dog_whistle import *
 from dog_whistle import _get_config, _reset
 import sys
-from mock import patch, MagicMock
+from mock import patch, MagicMock, call
 
 # from http://stackoverflow.com/questions/4219717/how-to-assert-output-with-nosetest-unittest-in-python
 from contextlib import contextmanager
@@ -19,6 +19,8 @@ def captured_output():
 
 
 class DogWhistleTest(TestCase):
+
+    maxDiff = None # used to see full diff output for failing tests
 
     def test_01_analyze_blank(self):
         expected = 'It does not appear like the LogFactory is used in this project'
@@ -96,10 +98,10 @@ class DogWhistleTest(TestCase):
                     'message': 'dd.key'
                 },
                 'g_mapper': {
-                    'Too high!': {
+                    'Too high!': [{
                         'name': 'too_high',
                         'value': '<extras.key.path>'
-                    }
+                    }]
                 }
             },
             'name': 'cool',
@@ -269,3 +271,40 @@ class DogWhistleTest(TestCase):
         dw_callback("message", {})
 
         i.assert_not_called()
+
+    @patch('dog_whistle._gauge')
+    def test_15_callback_multi_guage(self, g):
+        _reset()
+        configs = {
+            'name': 'cool3',
+            'tags': [
+                'list:strings'
+            ],
+            'metrics': {
+                'counters': [
+                    ('message', 'dd.key')
+                ],
+                'gauges': [
+                    ("some log", [
+                        ("some_log_gauge1", "key.key2"),
+                        ("some_log_gauge2", "key.value"), # doesnt exist, ok
+                        ("some_log_gauge3", "key3"),
+                    ])
+                ],
+            },
+            'options': {
+                'statsd_host': 'localhost',
+                'statsd_port': 8125,
+                'local': True,
+            }
+        }
+        dw_config(configs)
+
+        extras = {'key': {'key2': 41}, 'key3': 55}
+        dw_callback("some log", extras)
+
+        calls = [
+            call('cool3.some_log_gauge1', 41, tags=['list:strings']),
+            call('cool3.some_log_gauge3', 55, tags=['list:strings']),
+        ]
+        g.assert_has_calls(calls)

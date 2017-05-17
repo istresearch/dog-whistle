@@ -151,9 +151,34 @@ The same can be said for gauges:
 
 The dog whistle library automatically detects ``extras`` being passed into the log method, and adds lines here to recommend you use a gauge incase you are tracking a particular value in question via your ``extras`` dictionary.
 
-.. note:: At time of writing, dog whistle does not support multiple gauges for a single log statement
-
 Here, we dig into the extras dictionary using dot notation to try to find the value we are looking for. If no value is found, it is not sent.
+
+Multiple gauges can also be mapped to a single log statement within your ``extras`` dictionary. Just supply a **list** of different keys you would like to send to Datadog like so:
+
+::
+
+    'gauges': [
+        ("Counter Stats Dump", [
+            ("counter_dump_num_values", "counter.total_values"),
+            ("counter_dump_num_connections", "counter.connections"),
+            ("counter_dump_lifetime_users", "lifetime_users"),
+        ])
+    ]
+
+Where your extras dictionary in your log statement might look like the following:
+
+::
+
+    extras = {
+        'counter': {
+            'total_values': 5,
+            'connections': 12
+        },
+        'lifetime_users': 511
+    }
+    logger.info("Counter Stats Dump", extras)
+
+Here, we supply a normal dictionary to be logged to the logger instance, but DogWhistle is able to pick up and parse the single log statement into multiple gauges to be sent to Datadog.
 
 Lastly, ``tags`` are something that will always be included in your datadog stats. Here, you can specify a unique descriptor or other item to identify your process from the rest of the group. These tags are optional, but are helpful.
 
@@ -364,12 +389,18 @@ Direct Datadog API Configuration is planned for a future release.
 Wrapping Up
 -----------
 
+Once you have your ideal Datadog integration set up, you can build custom dashboards like the one shown below:
+
+.. figure:: images/scrapy-cluster.png
+   :alt: Scrapy Cluster Dashboard
+   :align:   center
+
 Be sure to add the following to your projects requirements.txt!
 
 ::
 
     dog-whistle==X.X
-    scutils==1.2.0
+    scutils==1.3.0dev0 # required for Python 2/3 compatibility
 
 Where ``X.X`` is the current version of ``dog-whistle`` on pypi
 

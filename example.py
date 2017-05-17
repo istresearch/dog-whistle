@@ -24,7 +24,10 @@ settings = {
     ],
     'metrics': {
         'gauges': [
-            ("Too high!", "too_high", "wrapper.value"),
+            ("Too high!", [
+                ("too_high", "wrapper.value"),
+                ("too_high_gauge2", "key2"),
+            ])
         ]
     },
     'options': {
@@ -51,4 +54,4 @@ for i in xrange(0, 10):
     #logger.warn("bad line " + str(val))
 
     if val > 50:
-        logger.error("Too high!", {'wrapper': {'value': val}})
+        logger.error("Too high!", {'wrapper': {'value': val}, 'key2': 11})

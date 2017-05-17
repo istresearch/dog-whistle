@@ -5,6 +5,13 @@ Change Log
 
 This page serves to document any changes made between releases.
 
+0.3.0
+-----
+
+Date: ??/??/??
+
+- Added multi gauge support
+
 0.2.0
 -----
 
