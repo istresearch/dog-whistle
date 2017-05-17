@@ -400,7 +400,7 @@ Be sure to add the following to your projects requirements.txt!
 ::
 
     dog-whistle==X.X
-    scutils==1.2.0
+    scutils==1.3.0dev0 # required for Python 2/3 compatibility
 
 Where ``X.X`` is the current version of ``dog-whistle`` on pypi
 
