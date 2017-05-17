@@ -178,7 +178,7 @@ Where your extras dictionary in your log statement might look like the following
     }
     logger.info("Counter Stats Dump", extras)
 
-Here, we supply a normal dictionary to be logged to the logger instance, but DogWhistle is able to pick up and parse the single log statement into multipl gauges sent to Datadog.
+Here, we supply a normal dictionary to be logged to the logger instance, but DogWhistle is able to pick up and parse the single log statement into multiple gauges to be sent to Datadog.
 
 Lastly, ``tags`` are something that will always be included in your datadog stats. Here, you can specify a unique descriptor or other item to identify your process from the rest of the group. These tags are optional, but are helpful.
 
@@ -388,6 +388,12 @@ Direct Datadog API Configuration is planned for a future release.
 
 Wrapping Up
 -----------
+
+Once you have your ideal Datadog integration set up, you can build custom dashboards like the one shown below:
+
+.. figure:: images/scrapy-cluster.png
+   :alt: Scrapy Cluster Dashboard
+   :align:   center
 
 Be sure to add the following to your projects requirements.txt!
 
