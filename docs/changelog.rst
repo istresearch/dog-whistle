@@ -8,7 +8,7 @@ This page serves to document any changes made between releases.
 0.3.0
 -----
 
-Date: ??/??/??
+Date: 05/18/17
 
 - Added multi gauge support
 
