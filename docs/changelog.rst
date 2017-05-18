@@ -12,6 +12,9 @@ Date: ??/??/??
 
 - Added multi gauge support
 
+- Improved regexes for dw_analyze
+
+
 0.2.0
 -----
 
