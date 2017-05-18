@@ -43,9 +43,9 @@ def dw_analyze(path):
 
     # compile regexes
     regex_lf = re.compile('(LogFactory.get_instance)')
-    regex_log = re.compile('\.(?:info|warn|warning|error|critical)\((\".*\").*\)')
+    regex_log = re.compile('\.(?:info|warn|warning|error|critical)\(((["\']).*?\\2)')
     regex_inc = re.compile('\.(?:info|warn|warning|error|critical)\((.*(?:\+|\.format\().*).*\)')
-    regex_com = re.compile('\".*\"\,')
+    regex_com = re.compile('((["\']).*?\\2),')
     found_lf = False
     line_cache = []
     unknown_cache = []
@@ -124,7 +124,7 @@ dw_dict = {
             # datadog metrics that will use ++'''
 
         for item in line_cache:
-            recommended_str += '\n            (' + item[3] + ', "' + _ddify(item[3], False) + '"),'
+            recommended_str += '\n            (' + item[3][0] + ', "' + _ddify(item[3][0], False) + '"),'
 
         recommended_str += '''
         ],
@@ -136,7 +136,7 @@ dw_dict = {
 
         for item in line_cache:
             if len(regex_com.findall(item[2])) > 0:
-                recommended_str += '\n            (' + item[3] + ', "' + _ddify(item[3], False) + '", "<extras.key.path>"),'
+                recommended_str += '\n            (' + item[3][0] + ', "' + _ddify(item[3][0], False) + '", "<extras.key.path>"),'
 
         recommended_str += '''
         ]

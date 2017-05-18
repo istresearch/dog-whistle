@@ -308,3 +308,14 @@ class DogWhistleTest(TestCase):
             call('cool3.some_log_gauge3', 55, tags=['list:strings']),
         ]
         g.assert_has_calls(calls)
+
+    def test_16_log_with_extra(self):
+        expected = None
+        with open('./tests/example4.out') as ff:
+            expected = ff.read().strip()
+
+        with captured_output() as (out, err):
+            dw_analyze('./tests/example4')
+
+        output = out.getvalue().strip()
+        self.assertEqual(output, expected)
