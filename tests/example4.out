@@ -1,0 +1,42 @@
+Valid Lines
+-----------
+./tests/example4/example.py
+   3 : logger.info('this is a test', extra={'foo': 'bar'})
+   4 : logger.warn('This is another "test"', extra={'foo': "bar", 'bar': "baz", "lorem": "ipsum"})
+
+Auto-Generated Template Settings
+--------------------------------
+
+dw_dict = {
+    'name': '<my_project>',
+    'tags': [
+        # high level tags that everything in your app will have
+        'item:descriptor'
+    ],
+    'metrics': {
+        # By default, everything is a counter using the concatentated log string
+        # the 'counters' key is NOT required, it is shown here for illustration
+        'counters': [
+            # datadog metrics that will use ++
+            ('this is a test', "this_is_a_test"),
+            ('This is another "test"', "this_is_another_test"),
+        ],
+        # datadog metrics that have a predefined value like `51`
+        # These metrics override any 'counter' with the same key,
+        # and are shown here for illustration purposes only
+        'gauges': [
+            
+            ('this is a test', "this_is_a_test", "<extras.key.path>"),
+            ('This is another "test"', "this_is_another_test", "<extras.key.path>"),
+        ]
+    },
+    'options': {
+        # use statsd for local testing, see docs
+        'statsd_host': 'localhost',
+        'statsd_port': 8125,
+        'local': True,
+    },
+
+}
+
+Ensure the above dictionary is passed into `dw_config()`

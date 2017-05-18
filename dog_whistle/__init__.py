@@ -43,9 +43,9 @@ def dw_analyze(path):
 
     # compile regexes
     regex_lf = re.compile('(LogFactory.get_instance)')
-    regex_log = re.compile('\.(?:info|warn|warning|error|critical)\((\".*\").*\)')
-    regex_inc = re.compile('\.(?:info|warn|warning|error|critical)\((.*(?:\+|format).*).*\)')
-    regex_com = re.compile('\".*\"\,')
+    regex_log = re.compile('\.(?:info|warn|warning|error|critical)\(((["\']).*?\\2)')
+    regex_inc = re.compile('\.(?:info|warn|warning|error|critical)\((.*(?:\+|\.format\().*).*\)')
+    regex_com = re.compile('((["\']).*?\\2),')
     found_lf = False
     line_cache = []
     unknown_cache = []
@@ -124,7 +124,7 @@ dw_dict = {
             # datadog metrics that will use ++'''
 
         for item in line_cache:
-            recommended_str += '\n            (' + item[3] + ', "' + _ddify(item[3], False) + '"),'
+            recommended_str += '\n            (' + item[3][0] + ', "' + _ddify(item[3][0], False) + '"),'
 
         recommended_str += '''
         ],
@@ -136,7 +136,7 @@ dw_dict = {
 
         for item in line_cache:
             if len(regex_com.findall(item[2])) > 0:
-                recommended_str += '\n            (' + item[3] + ', "' + _ddify(item[3], False) + '", "<extras.key.path>"),'
+                recommended_str += '\n            (' + item[3][0] + ', "' + _ddify(item[3][0], False) + '", "<extras.key.path>"),'
 
         recommended_str += '''
         ]
@@ -237,10 +237,24 @@ def dw_config(settings):
 
         if 'gauges' in _dw_configuration['metrics']:
             for item in _dw_configuration['metrics']['gauges']:
-                _dw_configuration['metrics']['g_mapper'][item[0]] = {
-                    'name': item[1],
-                    'value': item[2]
-                }
+                # all gauges are mapped into a list to be looped over
+                _dw_configuration['metrics']['g_mapper'][item[0]] = []
+                if isinstance(item[1], list):
+                    # we have a multi gauge setup
+                    log.debug("received multi gauge setup")
+                    _dw_configuration['metrics']['g_mapper'][item[0]] = []
+                    for part in item[1]:
+                        obj_part = {
+                            'name': part[0],
+                            'value': part[1],
+                        }
+                        _dw_configuration['metrics']['g_mapper'][item[0]].append(obj_part)
+                else:
+                    log.debug("received single gauge setup")
+                    _dw_configuration['metrics']['g_mapper'][item[0]].append({
+                        'name': item[1],
+                        'value': item[2]
+                    })
             del _dw_configuration['metrics']['gauges']
 
         _dw_init = True
@@ -262,14 +276,15 @@ def dw_callback(message, extras):
         log.debug("inside callback " + message + " " + str(extras))
         # set gauge metric
         if message in _dw_configuration['metrics']['g_mapper']:
-            # only use gauges if we have a direct mapping
-            value = _get_value(extras,
-                               _dw_configuration['metrics']['g_mapper'][message]['value'])
-            if value is None:
-                log.warning("Could not find key inside extras")
-            else:
-                the_msg = _ddify(_dw_configuration['metrics']['g_mapper'][message]['name'])
-                _gauge(the_msg, value, tags=_dw_configuration['tags'])
+            # loop through any gauges for this log statement
+            log.debug("executing gauge log to datadog")
+            for item in _dw_configuration['metrics']['g_mapper'][message]:
+                value = _get_value(extras, item['value'])
+                if value is None:
+                    log.warning("Could not find key " + item['value'] + " inside extras")
+                else:
+                    the_msg = _ddify(item['name'])
+                    _gauge(the_msg, value, tags=_dw_configuration['tags'])
         # increment counter metric
         else:
             if message in _dw_configuration['metrics']['c_mapper']:

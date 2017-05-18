@@ -5,6 +5,16 @@ Change Log
 
 This page serves to document any changes made between releases.
 
+0.3.0
+-----
+
+Date: 05/18/17
+
+- Added multi gauge support
+
+- Improved regexes for dw_analyze
+
+
 0.2.0
 -----
 

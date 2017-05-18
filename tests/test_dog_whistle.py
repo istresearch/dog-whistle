@@ -2,7 +2,7 @@ from unittest import TestCase
 from dog_whistle import *
 from dog_whistle import _get_config, _reset
 import sys
-from mock import patch, MagicMock
+from mock import patch, MagicMock, call
 
 # from http://stackoverflow.com/questions/4219717/how-to-assert-output-with-nosetest-unittest-in-python
 from contextlib import contextmanager
@@ -19,6 +19,8 @@ def captured_output():
 
 
 class DogWhistleTest(TestCase):
+
+    maxDiff = None # used to see full diff output for failing tests
 
     def test_01_analyze_blank(self):
         expected = 'It does not appear like the LogFactory is used in this project'
@@ -39,7 +41,7 @@ class DogWhistleTest(TestCase):
         self.assertEqual(output, expected)
 
     def test_03_analyze_found_logs(self):
-        expected = 'Valid Lines\n-----------\n./tests/example3/example.py\n   3 : logger.info("hey this is a message")\n   5 : logger.warn("stuff", extras)\n\nInvalid Lines\n-------------\n\n<<<<<<<<<< YOU MUST FIX THESE BEFORE USING THE DOGWHISTLE LIBRARY >>>>>>>>>>>\n\n./tests/example3/example.py\n   7 : logger.info("bad" + str(val), extras)\n\nAuto-Generated Template Settings\n--------------------------------\n\ndw_dict = {\n    \'name\': \'<my_project>\',\n    \'tags\': [\n        # high level tags that everything in your app will have\n        \'item:descriptor\'\n    ],\n    \'metrics\': {\n        # By default, everything is a counter using the concatentated log string\n        # the \'counters\' key is NOT required, it is shown here for illustration\n        \'counters\': [\n            # datadog metrics that will use ++\n            ("hey this is a message", "hey_this_is_a_message"),\n            ("stuff", "stuff"),\n        ],\n        # datadog metrics that have a predefined value like `51`\n        # These metrics override any \'counter\' with the same key,\n        # and are shown here for illustration purposes only\n        \'gauges\': [\n            \n            ("stuff", "stuff", "<extras.key.path>"),\n        ]\n    },\n    \'options\': {\n        # use statsd for local testing, see docs\n        \'statsd_host\': \'localhost\',\n        \'statsd_port\': 8125,\n        \'local\': True,\n    },\n\n}\n\nEnsure the above dictionary is passed into `dw_config()`'
+        expected = 'Valid Lines\n-----------\n./tests/example3/example.py\n   3 : logger.info("hey this is a message")\n   5 : logger.warn("stuff", extras)\n   9 : logger.info("good format stuff here")\n\nInvalid Lines\n-------------\n\n<<<<<<<<<< YOU MUST FIX THESE BEFORE USING THE DOGWHISTLE LIBRARY >>>>>>>>>>>\n\n./tests/example3/example.py\n   7 : logger.info("bad" + str(val), extras)\n   11 : logger.warn("bad formatting here {}".format(url))\n\nAuto-Generated Template Settings\n--------------------------------\n\ndw_dict = {\n    \'name\': \'<my_project>\',\n    \'tags\': [\n        # high level tags that everything in your app will have\n        \'item:descriptor\'\n    ],\n    \'metrics\': {\n        # By default, everything is a counter using the concatentated log string\n        # the \'counters\' key is NOT required, it is shown here for illustration\n        \'counters\': [\n            # datadog metrics that will use ++\n            ("hey this is a message", "hey_this_is_a_message"),\n            ("stuff", "stuff"),\n            ("good format stuff here", "good_format_stuff_here"),\n        ],\n        # datadog metrics that have a predefined value like `51`\n        # These metrics override any \'counter\' with the same key,\n        # and are shown here for illustration purposes only\n        \'gauges\': [\n            \n            ("stuff", "stuff", "<extras.key.path>"),\n        ]\n    },\n    \'options\': {\n        # use statsd for local testing, see docs\n        \'statsd_host\': \'localhost\',\n        \'statsd_port\': 8125,\n        \'local\': True,\n    },\n\n}\n\nEnsure the above dictionary is passed into `dw_config()`'
 
         with captured_output() as (out, err):
             dw_analyze('./tests/example3')
@@ -96,10 +98,10 @@ class DogWhistleTest(TestCase):
                     'message': 'dd.key'
                 },
                 'g_mapper': {
-                    'Too high!': {
+                    'Too high!': [{
                         'name': 'too_high',
                         'value': '<extras.key.path>'
-                    }
+                    }]
                 }
             },
             'name': 'cool',
@@ -269,3 +271,51 @@ class DogWhistleTest(TestCase):
         dw_callback("message", {})
 
         i.assert_not_called()
+
+    @patch('dog_whistle._gauge')
+    def test_15_callback_multi_guage(self, g):
+        _reset()
+        configs = {
+            'name': 'cool3',
+            'tags': [
+                'list:strings'
+            ],
+            'metrics': {
+                'counters': [
+                    ('message', 'dd.key')
+                ],
+                'gauges': [
+                    ("some log", [
+                        ("some_log_gauge1", "key.key2"),
+                        ("some_log_gauge2", "key.value"), # doesnt exist, ok
+                        ("some_log_gauge3", "key3"),
+                    ])
+                ],
+            },
+            'options': {
+                'statsd_host': 'localhost',
+                'statsd_port': 8125,
+                'local': True,
+            }
+        }
+        dw_config(configs)
+
+        extras = {'key': {'key2': 41}, 'key3': 55}
+        dw_callback("some log", extras)
+
+        calls = [
+            call('cool3.some_log_gauge1', 41, tags=['list:strings']),
+            call('cool3.some_log_gauge3', 55, tags=['list:strings']),
+        ]
+        g.assert_has_calls(calls)
+
+    def test_16_log_with_extra(self):
+        expected = None
+        with open('./tests/example4.out') as ff:
+            expected = ff.read().strip()
+
+        with captured_output() as (out, err):
+            dw_analyze('./tests/example4')
+
+        output = out.getvalue().strip()
+        self.assertEqual(output, expected)
