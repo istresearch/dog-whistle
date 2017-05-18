@@ -26,6 +26,8 @@ dw_dict = {
         # and are shown here for illustration purposes only
         'gauges': [
             
+            ('this is a test', "this_is_a_test", "<extras.key.path>"),
+            ('This is another "test"', "this_is_another_test", "<extras.key.path>"),
         ]
     },
     'options': {
