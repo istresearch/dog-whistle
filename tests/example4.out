@@ -3,6 +3,7 @@ Valid Lines
 ./tests/example4/example.py
    3 : logger.info('this is a test', extra={'foo': 'bar'})
    4 : logger.warn('This is another "test"', extra={'foo': "bar", 'bar': "baz", "lorem": "ipsum"})
+   6 : logger.info('Should strip trailing periods.')
 
 Auto-Generated Template Settings
 --------------------------------
@@ -20,6 +21,7 @@ dw_dict = {
             # datadog metrics that will use ++
             ('this is a test', "this_is_a_test"),
             ('This is another "test"', "this_is_another_test"),
+            ('Should strip trailing periods.', "should_strip_trailing_periods"),
         ],
         # datadog metrics that have a predefined value like `51`
         # These metrics override any 'counter' with the same key,
