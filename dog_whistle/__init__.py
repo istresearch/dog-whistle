@@ -312,7 +312,7 @@ def _ddify(message, prepend=True):
     if prepend:
         message = '{}.{}'.format(_dw_configuration['name'], message)
     message = re.sub(r'[^0-9a-zA-Z_. ]', '', message)
-    return message.lower().replace(' ', '_').replace('"', '')[:MAX_LENGTH]
+    return message.rstrip('.').lower().replace(' ', '_').replace('"', '')[:MAX_LENGTH]
 
 
 def _get_value(item, key):
