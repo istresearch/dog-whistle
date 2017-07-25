@@ -104,6 +104,7 @@ class DogWhistleTest(TestCase):
                     }]
                 }
             },
+            'allow_extra_tags': False,
             'name': 'cool',
             'options': {'local': True, 'statsd_host': 'localhost',
             'statsd_port': 8125},
