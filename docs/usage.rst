@@ -182,7 +182,7 @@ Here, we supply a normal dictionary to be logged to the logger instance, but Dog
 
 Lastly, ``tags`` are something that will always be included in your datadog stats. Here, you can specify a unique descriptor or other item to identify your process from the rest of the group. These tags are optional, but are helpful.
 
-Setting ``allow_extra_tags=True`` in your configuration will allow you to override global tags on a per-message basis:
+Setting ``allow_extra_tags=True`` in your configuration will allow you to add additional tags on a per-message basis:
 
 ::
 

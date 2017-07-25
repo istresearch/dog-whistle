@@ -290,7 +290,7 @@ def dw_callback(message, extras):
                     the_msg = _ddify(item['name'])
 
                     if 'tags' in extras and _dw_configuration['allow_extra_tags']:
-                        _gauge(the_msg, value, tags=extras['tags'])
+                        _gauge(the_msg, value, tags=_dw_configuration['tags'] + extras['tags'])
                     else:
                         _gauge(the_msg, value, tags=_dw_configuration['tags'])
         # increment counter metric
@@ -302,7 +302,7 @@ def dw_callback(message, extras):
                 the_msg = _ddify(message)
 
             if 'tags' in extras and _dw_configuration['allow_extra_tags']:
-                _increment(the_msg, tags=extras['tags'])
+                _increment(the_msg, tags=_dw_configuration['tags'] + extras['tags'])
             else:
                 _increment(the_msg, tags=_dw_configuration['tags'])
     else:
