@@ -182,6 +182,14 @@ Here, we supply a normal dictionary to be logged to the logger instance, but Dog
 
 Lastly, ``tags`` are something that will always be included in your datadog stats. Here, you can specify a unique descriptor or other item to identify your process from the rest of the group. These tags are optional, but are helpful.
 
+Setting ``allow_extra_tags=True`` in your configuration will allow you to add additional tags on a per-message basis:
+
+::
+
+    logger.info("this is a test",extra={'tags': ['my:tag', 'my:othertag']})
+
+.. note:: Tags are not sent while dog whistle is in local configuration mode. 
+
 Local Configuration
 -------------------
 
@@ -289,8 +297,6 @@ Local Datadog Agent
 
 Here, we assume you have a local `Datadog Agent <http://docs.datadoghq.com/guides/basic_agent_usage/>`_ running on your local machine. Please refer to the official documentation for troubleshooting connecting your machine to Datadog.
 
-.. note:: The majority of this guide should work on all platforms, however final Datadog + Docker integration may need to be conducted on a linux box only.
-
 At this point you should have a Datadog Agent installed and running successfully on your machine. Refer to your datadog configuration file to get the location of the ``statsd`` host that Datadog is running. For example, on unix based systems the log location is:
 
 ::
@@ -363,7 +369,7 @@ You will want to make sure your final application can hit the local Datadog Agen
 
     'statsd_host': "localhost",
 
-within your ``options``. If using Docker, set your configuration to
+within your ``options``. If using Docker on Linux, set your configuration to
 
 ::
 
@@ -371,9 +377,15 @@ within your ``options``. If using Docker, set your configuration to
       - DATADOG_LOCAL=True
       - DATADOG_STATSD_HOST=172.17.0.1 # linux only
 
-to ensure your container can hit the local Datadog Agent.
+If using Docker on Mac OS, set your configuration to
 
-.. warning:: At time of writing, Docker for Mac does not provide the ability for a container to reach the docker host. You should test your setup on a machine that has the ability to access the host so it can talk to the Datadog Agent running locally.
+::
+
+    environment:
+      - DATADOG_LOCAL=True
+      - DATADOG_STATSD_HOST=docker.for.mac.localhost # Mac only
+
+to ensure your container can hit the local Datadog Agent.
 
 Once your application is configured, you can see the metrics in your `Metrics Summary <https://app.datadoghq.com/metric/summary>`_ like below, and begin building custom dashboards, graphs, and alerts based on your logging.
 
