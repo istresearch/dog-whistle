@@ -104,6 +104,7 @@ class DogWhistleTest(TestCase):
                     }]
                 }
             },
+            'allow_extra_tags': False,
             'name': 'cool',
             'options': {'local': True, 'statsd_host': 'localhost',
             'statsd_port': 8125},
@@ -319,3 +320,28 @@ class DogWhistleTest(TestCase):
 
         output = out.getvalue().strip()
         self.assertEqual(output, expected)
+
+    @patch('dog_whistle._increment')
+    def test_17_extra_tags(self, i):
+        _reset()
+        configs = {
+            'name': 'cool2',
+            'tags': [
+                'list:strings'
+            ],
+            'allow_extra_tags': True,
+            'metrics': {
+                'counters': [('message', 'dd.key')],
+                'gauges': [("some log", "some_log", "key.key2.crazy"),],
+            },
+            'options': {
+                'statsd_host': 'localhost',
+                'statsd_port': 8125,
+                'local': True,
+            }
+        }
+        dw_config(configs)
+
+        dw_callback("message", {"tags":["am:cat","is:dog"]})
+
+        i.assert_called_once_with('cool2.dd.key', tags=['list:strings',"am:cat","is:dog"])

@@ -197,6 +197,10 @@ def dw_config(settings):
             log.debug("no tags provided")
             _dw_configuration['tags'] = []
 
+        if 'allow_extra_tags' not in _dw_configuration:
+            log.debug("defaulting to no extra tags")
+            _dw_configuration['allow_extra_tags'] = False
+
         # configure local testing vs with datadog
         if 'local' in _dw_configuration['options'] and _dw_configuration['options']['local'] == True:
             from statsd import StatsClient
@@ -284,7 +288,11 @@ def dw_callback(message, extras):
                     log.warning("Could not find key " + item['value'] + " inside extras")
                 else:
                     the_msg = _ddify(item['name'])
-                    _gauge(the_msg, value, tags=_dw_configuration['tags'])
+
+                    if 'tags' in extras and _dw_configuration['allow_extra_tags']:
+                        _gauge(the_msg, value, tags=_dw_configuration['tags'] + extras['tags'])
+                    else:
+                        _gauge(the_msg, value, tags=_dw_configuration['tags'])
         # increment counter metric
         else:
             if message in _dw_configuration['metrics']['c_mapper']:
@@ -293,7 +301,10 @@ def dw_callback(message, extras):
             else:
                 the_msg = _ddify(message)
 
-            _increment(the_msg, tags=_dw_configuration['tags'])
+            if 'tags' in extras and _dw_configuration['allow_extra_tags']:
+                _increment(the_msg, tags=_dw_configuration['tags'] + extras['tags'])
+            else:
+                _increment(the_msg, tags=_dw_configuration['tags'])
     else:
         log.warning("Tried to increment attribute before configuration")
 
