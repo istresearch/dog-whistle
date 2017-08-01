@@ -5,10 +5,19 @@ Change Log
 
 This page serves to document any changes made between releases.
 
+0.4.0
+-----
+
+Date: 07/26/17
+
+- Strip trailing periods
+
+- Allow custom tags per message
+
 0.3.0
 -----
 
-Date: ??/??/??
+Date: 05/18/17
 
 - Added multi gauge support
 
