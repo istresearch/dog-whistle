@@ -103,9 +103,6 @@ By analyzing only your valid lines, the dog whistle library dumps out a dictiona
 
 * **name** - the name of your overall project
 
-If you do not provide an ``options`` key, it is assumed you will be passing your ``DATADOG_API_KEY`` and ``DATADOG_APP_KEY`` via environment variables.
-
-
 * **options** - the options to be passed to configure the statsd or datadog setup
 
 For example:
@@ -393,10 +390,16 @@ Once your application is configured, you can see the metrics in your `Metrics Su
    :alt: Statsd
    :align:   center
 
-Direct API Configuration
-^^^^^^^^^^^^^^^^^^^^^^^^
+DataDog Statsd Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Direct Datadog API Configuration is planned for a future release.
+To enable DataDog integration simply set the ``local`` option to False, and ensure that ``statsd_host`` is pointing to a dd-agent. For instance:
+
+::
+
+    environment:
+      - DATADOG_LOCAL=False
+      - DATADOG_STATSD_HOST=172.17.0.1
 
 Wrapping Up
 -----------
