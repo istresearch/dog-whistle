@@ -393,7 +393,7 @@ Once your application is configured, you can see the metrics in your `Metrics Su
 DataDog Statsd Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To enable DataDog integration simply set the ``local`` option to False, and ensure that ``DATADOG_STATSD_HOST`` is pointing to a dd-agent instance. 
+To enable DataDog integration simply set the ``local`` option to False, and ensure that ``statsd_host`` is pointing to a dd-agent. For instance:
 
 ::
 

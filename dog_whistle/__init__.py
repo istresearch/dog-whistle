@@ -223,7 +223,7 @@ def dw_config(settings):
                 log.error("Unknown statsd config for DataDog setup")
                 raise Exception("Unknown statsd config for DataDog setup")
 
-            initialize(statsd_host=_dw_configuration['options']['statsd_host'], statsd_port=_dw_configuration['options']['statsd_port'])
+            initialize(**_dw_configuration['options'])
             _dw_stats = statsd
 
         # generate override mappings
