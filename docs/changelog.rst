@@ -5,6 +5,13 @@ Change Log
 
 This page serves to document any changes made between releases.
 
+0.5.0
+-----
+
+Date: 09/28/17
+
+- Remove requirement for API keys when not in local mode
+
 0.4.0
 -----
 

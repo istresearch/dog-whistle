@@ -218,14 +218,10 @@ def dw_config(settings):
         else:
             from datadog import initialize, statsd
 
-            # ensure vars are set
-            if 'api_key' not in _dw_configuration['options'] and \
-                    os.getenv('DATADOG_API_KEY', None) is None:
-                raise Exception("Please provide DataDog API Key")
-
-            if 'app_key' not in _dw_configuration['options'] and \
-                    os.getenv('DATADOG_APP_KEY', None) is None:
-                raise Exception("Please provide DataDog APP Key")
+            if 'statsd_host' not in _dw_configuration['options'] or \
+                    'statsd_port' not in _dw_configuration['options']:
+                log.error("Unknown statsd config for DataDog setup")
+                raise Exception("Unknown statsd config for DataDog setup")
 
             initialize(**_dw_configuration['options'])
             _dw_stats = statsd
