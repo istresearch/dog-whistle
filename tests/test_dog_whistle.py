@@ -123,26 +123,15 @@ class DogWhistleTest(TestCase):
         }
         with self.assertRaises(Exception) as e:
             dw_config(configs)
-        self.assertEquals(e.exception.args[0], "Please provide DataDog API Key")
-
-        # assert no app key
-        configs = {
-            'name': 'cool',
-            'options': {
-                'api_key': 'neat'
-            }
-        }
-        with self.assertRaises(Exception) as e:
-            dw_config(configs)
-        self.assertEquals(e.exception.args[0], "Please provide DataDog APP Key")
+        self.assertEquals(e.exception.args[0], "Unknown statsd config for DataDog setup")
 
     def test_08_config_dd(self):
         _reset()
         configs = {
             'name': 'cool',
             'options': {
-                'api_key': 'neat',
-                'app_key': 'neat2',
+                'statsd_host': 'localhost',
+                'statsd_port': 8125,
             }
         }
         dw_config(configs)

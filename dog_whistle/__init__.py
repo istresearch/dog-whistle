@@ -220,8 +220,8 @@ def dw_config(settings):
 
             if 'statsd_host' not in _dw_configuration['options'] or \
                     'statsd_port' not in _dw_configuration['options']:
-                log.error("Unknown statsd config for datadog statsd")
-                raise Exception("Unknown statsd config for datadog statsd")
+                log.error("Unknown statsd config for DataDog setup")
+                raise Exception("Unknown statsd config for DataDog setup")
 
             initialize(statsd_host=_dw_configuration['options']['statsd_host'], statsd_port=_dw_configuration['options']['statsd_port'])
             _dw_stats = statsd
