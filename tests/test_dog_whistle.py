@@ -353,10 +353,10 @@ class DogWhistleTest(TestCase):
             }
         }
         dw_config(configs)
-        with patch.object(_get_dw_stats(), 'gauge') as gauge:
+        with patch.object(_get_dw_stats(), 'gauge') as statsd_gauge:
             extras = {'key': {'key2': 41}}
             dw_callback("some log", extras)
-            gauge.assert_called_once_with(metric='cool2.some_log', tags=['list:strings'], value=41)
+            statsd_gauge.assert_called_once_with(metric='cool2.some_log', tags=['list:strings'], value=41)
 
     def test_19_case_insensitive_tags_increment(self):
         _reset()
@@ -372,7 +372,7 @@ class DogWhistleTest(TestCase):
             }
         }
         dw_config(configs)
-        with patch.object(_get_dw_stats(), 'increment') as increment:
+        with patch.object(_get_dw_stats(), 'increment') as statsd_increment:
             dw_callback("message", {})
-            increment.assert_called_once_with(metric='cool3.message', tags=['list:strings'])
+            statsd_increment.assert_called_once_with(metric='cool3.message', tags=['list:strings'])
 
