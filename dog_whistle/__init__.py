@@ -371,6 +371,11 @@ def _gauge(name, value, tags):
 
     log.info("metric guage " + name)
 
+def _get_dw_stats():
+    """Returns the statsd implementation in use"""
+    global _dw_stats
+    return _dw_stats
+
 def _get_config():
     """Returns the current configuration of the module"""
     global _dw_configuration

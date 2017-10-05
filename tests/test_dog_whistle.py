@@ -1,6 +1,6 @@
 from unittest import TestCase
 from dog_whistle import *
-from dog_whistle import _get_config, _reset
+from dog_whistle import _get_config, _reset, _get_dw_stats
 import sys
 from mock import patch, MagicMock, call
 
@@ -334,3 +334,45 @@ class DogWhistleTest(TestCase):
         dw_callback("message", {"tags":["am:cat","is:dog"]})
 
         i.assert_called_once_with('cool2.dd.key', tags=['list:strings',"am:cat","is:dog"])
+
+    def test_18_case_insensitive_tags_guage(self):
+        _reset()
+        configs = {
+            'name': 'cool2',
+            'tags': [
+                'lIsT:stRinGs'
+            ],
+            'metrics': {
+                'counters': [('message', 'dd.key')],
+                'gauges': [("some log", "some_log", "key.key2"),],
+            },
+            'options': {
+                'statsd_host': 'localhost',
+                'statsd_port': 8125,
+                'local': False, # Force sending tags
+            }
+        }
+        dw_config(configs)
+        with patch.object(_get_dw_stats(), 'gauge') as gauge:
+            extras = {'key': {'key2': 41}}
+            dw_callback("some log", extras)
+            gauge.assert_called_once_with(metric='cool2.some_log', tags=['list:strings'], value=41)
+
+    def test_19_case_insensitive_tags_increment(self):
+        _reset()
+        configs = {
+            'name': 'cool3',
+            'tags': [
+                'lIsT:stRinGs'
+            ],
+            'options': {
+                'statsd_host': 'localhost',
+                'statsd_port': 8125,
+                'local': False, # Force sending tags
+            }
+        }
+        dw_config(configs)
+        with patch.object(_get_dw_stats(), 'increment') as increment:
+            dw_callback("message", {})
+            increment.assert_called_once_with(metric='cool3.message', tags=['list:strings'])
+
