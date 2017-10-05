@@ -347,6 +347,8 @@ def _increment(name, tags):
     global _dw_stats
     global _dw_local
 
+    tags = _normalize_tags(tags)
+
     if _dw_local:
         _dw_stats.increment(stat=name)
     else:
@@ -364,12 +366,17 @@ def _gauge(name, value, tags):
     global _dw_stats
     global _dw_local
 
+    tags = _normalize_tags(tags)
+
     if _dw_local:
         _dw_stats.gauge(stat=name, value=value)
     else:
         _dw_stats.gauge(metric=name, value=value, tags=tags)
 
     log.info("metric guage " + name)
+
+def _normalize_tags(tags):
+    return [t.lower() for t in tags]
 
 def _get_dw_stats():
     """Returns the statsd implementation in use"""
