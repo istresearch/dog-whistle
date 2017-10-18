@@ -5,6 +5,13 @@ Change Log
 
 This page serves to document any changes made between releases.
 
+0.6.0
+=====
+
+Date: ??/??/??
+
+- Normalize to lowercase all tags
+
 0.5.0
 -----
 
