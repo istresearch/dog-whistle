@@ -12,12 +12,17 @@ rm -f *.tar.gz'''
 
 python setup.py sdist
 pip install dist/dog-whistle-*.tar.gz
-/bin/bash run_tests.sh'''
+
+'''
         sh '''# build package
 
 
 mv dist/*.tar.gz .
 rm -rf dist *.egg-info'''
+        sh '''# Run tests
+
+
+bash run_tests.sh'''
       }
     }
     stage('Build') {
