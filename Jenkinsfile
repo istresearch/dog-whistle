@@ -13,7 +13,7 @@ docker.image('python:2.7').inside {
       stash includes: '*.tar.gz', name: 'built'
     }
   }
-  milestone
+  milestone()
   input 'Continue to deploy stage?'
   stage('Deploy') {
     steps {
