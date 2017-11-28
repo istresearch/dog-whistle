@@ -1,16 +1,15 @@
 pipeline {
   agent any
   stages {
-    stage('Build') {
-      steps {
-        sh '''# remove old build products
-rm -f *.tar.gz'''
-        sh '''# install package
-python setup.py sdist
-'''
-        sh '''# pip install
-
-pip install dist/dog-whistle-*.tar.gz'''
+    stage('Remove old build products') {
+      steps{
+        sh 'rm -f *.tar.gz'
+      }
+    }
+    stage('Install package'){
+      steps{
+        sh 'python setup.py sdist'
+        sh 'pip install dist/dog-whistle-*.tar.gz'
       }
     }
     stage('Test') {
@@ -20,12 +19,10 @@ pip install dist/dog-whistle-*.tar.gz'''
     }
     stage('Deploy') {
       steps {
-        sh '''# build package
-mv dist/*.tar.gz .
-rm -rf dist *.egg-info'''
-        sh '''echo Copying package to pip repo
-mkdir -p /data/blueocean/repo/pip/prod
-cp *.tar.gz /data/blueocean/repo/pip/prod'''
+        sh 'mv dist/*.tar.gz .'
+        sh 'rm -rf dist *.egg-info'
+        sh 'mkdir -p /data/blueocean/repo/pip/prod'
+        sh 'cp *.tar.gz /data/blueocean/repo/pip/prod'
       }
     }
   }
