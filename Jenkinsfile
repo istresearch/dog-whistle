@@ -1,11 +1,8 @@
 pipeline {
-  agent any
+  agent {
+      docker { image 'python:2.7' }
+  }
   stages {
-    stage('Remove old build products') {
-      steps{
-        sh 'rm -f *.tar.gz'
-      }
-    }
     stage('Install package'){
       steps{
         sh 'python setup.py sdist'
