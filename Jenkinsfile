@@ -14,8 +14,11 @@ pipeline {
       steps {
         sh 'hostname'
         sh 'bash run_tests.sh'
+        stash includes: '*.tar.gz', name: 'built'
       }
     }
+    milestone
+    input 'Continue to deploy stage?'
     stage('Deploy') {
       steps {
         sh 'hostname'
