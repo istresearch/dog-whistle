@@ -20,6 +20,9 @@ pip install dist/dog-whistle-*.tar.gz'''
     }
     stage('Deploy') {
       steps {
+        sh '''# build package
+mv dist/*.tar.gz .
+rm -rf dist *.egg-info'''
         sh '''echo Copying package to pip repo
 mkdir -p /data/blueocean/repo/pip/prod
 cp *.tar.gz /data/blueocean/repo/pip/prod'''
