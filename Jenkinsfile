@@ -16,7 +16,7 @@ docker.image('python:2.7').inside {
 milestone()
 
 
-def shouldPromote = true
+def shouldPromote = false
 try {
     timeout(time: 15, unit: 'SECONDS') { 
         shouldPromote = input(
@@ -28,13 +28,12 @@ try {
     shouldPromote = false
 }
 
-node {
     // Mark build as successful even if we aren't promoting.
     if (!shouldPromote) {
         currentBuild.result = 'SUCCESS'
         return
     } 
-}
+
 
 node {
   stage('Deploy') {
