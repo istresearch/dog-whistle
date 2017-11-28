@@ -16,29 +16,21 @@ docker.image('python:2.7').inside {
 milestone()
 
 
-def userInput = true
-def didTimeout = false
+def shouldPromote = true
 try {
     timeout(time: 15, unit: 'SECONDS') { 
-        userInput = input(
+        shouldPromote = input(
         message: 'Would you like to deploy?', parameters: [
-        [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Would you like to deploy?']
+        [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Build Promotion']
         ])
     }
-} catch(err) { // timeout reached or input false
-    def user = err.getCauses()[0].getUser()
-    if('SYSTEM' == user.toString()) { // SYSTEM means timeout.
-        didTimeout = true
-    } else {
-        userInput = false
-        echo "Aborted by: [${user}]"
-    }
+} catch(err) {
+    shouldPromote = false
 }
 
 node {
-    // Mark build as successful if timed out. This implies it was a normal build that will not get
-    // promoted.
-    if (didTimeout) {
+    // Mark build as successful even if we aren't promoting.
+    if (!shouldPromote) {
         currentBuild.result = 'SUCCESS'
         return
     } 
