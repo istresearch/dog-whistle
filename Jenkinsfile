@@ -21,19 +21,17 @@ try {
     timeout(time: 15, unit: 'SECONDS') { 
         shouldPromote = input(
         message: 'Would you like to deploy?', parameters: [
-        [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Build Promotion']
+        [$class: 'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Promote build']
         ])
     }
 } catch(err) {
-    shouldPromote = false
 }
 
-    // Mark build as successful even if we aren't promoting.
-    if (!shouldPromote) {
-        currentBuild.result = 'SUCCESS'
-        return
-    } 
-
+// Mark build as successful even if we aren't promoting.
+if (!shouldPromote) {
+    currentBuild.result = 'SUCCESS'
+    return
+} 
 
 node {
   stage('Deploy') {
