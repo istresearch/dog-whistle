@@ -9,6 +9,7 @@ docker.image('python:2.7').inside {
       sh 'bash run_tests.sh'
   }
   stage('Archive Artifact') {
-      archive 'dist/dog-whistle-*.tar.gz'
+      sh 'mv dist/dog-whistle-*.tar.gz .'
+      archive 'dog-whistle-*.tar.gz'
   }
 }
