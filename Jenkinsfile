@@ -1,8 +1,6 @@
 node{
   checkout scm
-}
-
-docker.image('python:2.7').inside {
+  docker.image('python:2.7').inside {
   stage('Install package'){
       sh 'hostname'
       sh 'python setup.py sdist'
@@ -17,3 +15,6 @@ docker.image('python:2.7').inside {
       archive 'dog-whistle-*.tar.gz'
   }
 }
+}
+
+
