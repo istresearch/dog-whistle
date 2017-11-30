@@ -1,3 +1,7 @@
+node{
+  scm checkout
+}
+
 docker.image('python:2.7').inside {
   stage('Install package'){
       sh 'hostname'
