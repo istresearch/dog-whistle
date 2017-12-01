@@ -1,4 +1,6 @@
-stage('Hello World'){
-  sh 'hostname'
-  sh 'echo "hello world"'
+node{
+  stage('Hello World'){
+    sh 'hostname'
+    sh 'echo "hello world"'
+  }
 }
