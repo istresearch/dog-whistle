@@ -1,5 +1,17 @@
 def buildNumberInput;
 node{
+  stage('Get git branch'){
+    gitBranchInput = input(
+        id: 'gitBranch',
+        message: 'dog-whistle git branch: ',
+        ok: 'ok',
+        parameters: [string(
+          default: 'master',
+          name: 'gitBranch'
+        )]
+    )
+    echo ("Using branch " + gitBranchInput)
+  }
   stage('Get Build Number'){
     buildNumberInput = input(
         id: 'buildNumber',
@@ -20,5 +32,9 @@ node{
        selector: selector,
        filter: 'dog-whistle-*.tar.gz']);
     sh 'ls -al'
+  }
+  stage('Deploy'){
+    sh 'mv dog-whistle-*.tar.gz /data/blueocean/repo/pip/prod'
+    echo 'Deplyed'
   }
 }
