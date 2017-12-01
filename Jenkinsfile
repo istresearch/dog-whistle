@@ -1,6 +1,7 @@
+def buildNumberInput;
 node{
   stage('Get Build Number'){
-    def buildNumberInput = input(
+    buildNumberInput = input(
         id: 'buildNumber',
         message: 'dog-whistle build number: ',
         ok: 'ok',
