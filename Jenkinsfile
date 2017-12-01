@@ -1,8 +1,9 @@
 node{
-  stage('Get Build Number'){
-    def buildNumberInput = input(
-        id: 'buildNumber', message: 'dog-whistle build number: ', ok: 'ok', parameters: [string(description: '.....', name: 'buildNumber')]
-    )
-    echo ("Password was: " + buildNumberInput)
-  }
+  def userInput = input(
+   id: 'userInput', message: 'Let\'s promote?', parameters: [
+   [$class: 'TextParameterDefinition', defaultValue: 'uat', description: 'Environment', name: 'env'],
+   [$class: 'TextParameterDefinition', defaultValue: 'uat1', description: 'Target', name: 'target']
+  ])
+  echo ("Env: "+userInput['env'])
+  echo ("Target: "+userInput['target'])
 }
