@@ -1,4 +1,6 @@
 def buildNumberInput;
+def gitBranchInput;
+
 node{
   stage('Get git branch'){
     gitBranchInput = input(
@@ -28,7 +30,7 @@ node{
     def selector = [$class: 'SpecificBuildSelector', buildNumber: "${buildNumberInput}"];
     // dog-whistle-0.6.0.tar.gz
     step ([$class: 'CopyArtifact',
-       projectName: "dog-whistle/joe-test-jenkinsfile",
+       projectName: "dog-whistle/${gitBranchInput}",
        selector: selector,
        filter: 'dog-whistle-*.tar.gz']);
     sh 'ls -al'
