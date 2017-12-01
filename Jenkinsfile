@@ -13,7 +13,7 @@ node{
     echo ("Fetching build #" + buildNumberInput)
   }
   stage('Copy Artifact'){
-    def selector = [$class: 'SpecificBuildSelector', buildNumber: "${buildNumber}"];
+    def selector = [$class: 'SpecificBuildSelector', buildNumber: "${buildNumberInput}"];
     // dog-whistle-0.6.0.tar.gz
     step ([$class: 'CopyArtifact',
        projectName: "dog-whistle",
