@@ -16,7 +16,7 @@ node{
     def selector = [$class: 'SpecificBuildSelector', buildNumber: "${buildNumberInput}"];
     // dog-whistle-0.6.0.tar.gz
     step ([$class: 'CopyArtifact',
-       projectName: "dog-whistle",
+       projectName: "dog-whistle/joe-test-jenkinsfile",
        selector: selector,
        filter: 'dog-whistle-*.tar.gz']);
     sh 'ls -al'
