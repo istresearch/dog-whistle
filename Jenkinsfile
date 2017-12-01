@@ -12,4 +12,13 @@ node{
     )
     echo ("Fetching build #" + buildNumberInput)
   }
+  stage('Copy Artifact'){
+    def selector = [$class: 'SpecificBuildSelector', buildNumber: "${buildNumber}"];
+    // dog-whistle-0.6.0.tar.gz
+    step ([$class: 'CopyArtifact',
+       projectName: "dog-whistle",
+       selector: selector,
+       filter: 'dog-whistle-*.tar.gz']);
+    sh 'ls -al'
+  }
 }
