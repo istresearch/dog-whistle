@@ -34,6 +34,7 @@ node{
     sh 'ls -al'
   }
   stage('Deploy'){
+    sh 'mkdir -p /data/blueocean/repo/pip/prod'
     sh 'mv dog-whistle-*.tar.gz /data/blueocean/repo/pip/prod'
     echo 'Deplyed'
   }
