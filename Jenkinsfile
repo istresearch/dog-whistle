@@ -8,7 +8,7 @@ node{
         message: 'dog-whistle git branch: ',
         ok: 'ok',
         parameters: [string(
-          default: 'master',
+          defaultValue: 'master',
           name: 'gitBranch'
         )]
     )
