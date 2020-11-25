@@ -6,6 +6,13 @@ Change Log
 This page serves to document any changes made between releases.
 
 
+0.7.0
+-----
+
+Date: 11/25/20
+
+- Unpinned requirements
+
 0.6.0
 -----
 
