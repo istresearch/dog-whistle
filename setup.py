@@ -9,13 +9,10 @@ def get_version():
                          version_file.read()).group('version')
 
 install_requires = [
-    'mock>=1.3.0',
-    'coverage==4.0.3',
-    'nose>=1.3.7',
     'statsd==3.2.1',
     'datadog==0.15.0',
-    'future==0.16.0',
-    'six==1.10.0',
+    'future>=0.16.0',
+    'six>=1.10.0',
 ]
 
 lint_requires = [
@@ -24,7 +21,9 @@ lint_requires = [
 ]
 
 tests_require = [
-    'mock==1.3.0',
+    'mock>=1.3.0',
+    'coverage>=4.0.3',
+    'nose>=1.3.7',
 ]
 
 dependency_links = []
